@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debate Kelsen vs Schmitt - Maestría Constitucional</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fuentes Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,700;0,900;1,300&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Iconos Phosphor -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        /* --- ESTILOS BASE (INTACTOS) --- */
+        :root {
+            --kelsen-color: #0ea5e9; /* Sky 500 */
+            --kelsen-bg: rgba(14, 165, 233, 0.15);
+            --schmitt-color: #ef4444; /* Red 500 */
+            --schmitt-bg: rgba(239, 68, 68, 0.15);
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #0f172a; /* Slate 900 */
+            color: #e2e8f0; /* Slate 200 */
+            overflow: hidden; 
+        }
+        
+        h1, h2, h3, h4, .serif { font-family: 'Merriweather', serif; }
+
+        /* --- SLIDER SYSTEM --- */
+        #slider-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease;
+            transform: scale(0.98);
+            padding: 1rem;
+            padding-top: 6rem; /* Espacio Header */
+            padding-bottom: 6rem; /* Espacio Footer */
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: auto; 
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+            z-index: 10;
+        }
+
+        /* --- FLIP CARDS --- */
+        .flip-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .flip-card {
+            background-color: transparent;
+            height: 380px; /* Ajustado para más texto */
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .flip-card-front { background: #1e293b; }
+        .flip-card-back { transform: rotateY(180deg); overflow-y: auto; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+        .bg-kelsen-gradient { background: linear-gradient(135deg, #0369a1 0%, #0f172a 100%); border-color: #0ea5e9; }
+        .bg-schmitt-gradient { background: linear-gradient(135deg, #b91c1c 0%, #0f172a 100%); border-color: #ef4444; }
+
+        /* --- CÁPSULAS DE PREGUNTAS --- */
+        .q-capsule {
+            width: 100%;
+            max-width: 800px;
+            background: #1e293b;
+            border-radius: 30px; 
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+            position: relative;
+            border: 2px solid #475569;
+            height: 70px;
+        }
+
+        .q-capsule:hover {
+            transform: scale(1.02);
+            background: #475569;
+        }
+
+        .q-capsule.expanded {
+            height: auto;
+            min-height: 120px;
+            border-radius: 15px;
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border-color: #6366f1;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .q-icon {
+            min-width: 70px;
+            height: 70px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            color: #fff;
+            z-index: 20;
+        }
+
+        .q-content {
+            opacity: 0;
+            white-space: normal;
+            padding: 0 20px 20px 20px;
+            transition: all 0.4s ease 0.1s;
+            color: #cbd5e1;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .q-capsule.expanded .q-content {
+            opacity: 1;
+            display: block;
+        }
+        
+        .q-capsule.expanded .q-icon {
+            width: 100%;
+            height: 50px;
+            background: rgba(255,255,255,0.05);
+            font-size: 24px;
+        }
+
+        .q-hint {
+            position: absolute;
+            left: 80px;
+            opacity: 1;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+            color: #94a3b8;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        .q-capsule.expanded .q-hint { opacity: 0; display: none; }
+
+
+        /* --- JUEGO CLASIFICACIÓN (MOVIBLE) --- */
+        .game-area { display: flex; gap: 20px; width: 100%; max-width: 1000px; height: auto; min-height: 400px; }
+        .game-source { width: 30%; display: flex; flex-direction: column; gap: 10px; }
+        .game-targets { width: 70%; display: flex; gap: 20px; }
+        .target-box { 
+            flex: 1; border-radius: 1rem; border: 2px dashed #475569; 
+            display: flex; flex-direction: column; align-items: center; padding: 1rem;
+            transition: all 0.3s; position: relative; background: rgba(30, 41, 59, 0.5);
+        }
+        
+        .draggable-token {
+            background: #f59e0b; color: #0f172a; padding: 12px; border-radius: 8px;
+            font-weight: bold; font-size: 0.85rem; cursor: pointer; text-align: left;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: transform 0.2s;
+            border: 2px solid transparent; z-index: 50; display: flex; align-items: center;
+        }
+        .draggable-token:hover { transform: scale(1.05); }
+        .draggable-token.selected { border-color: white; transform: scale(1.1); box-shadow: 0 0 15px white; }
+        .draggable-token.matched { cursor: default; transform: none; opacity: 0.8; filter: grayscale(0.2); }
+        
+        .token-tag {
+            padding: 2px 6px; border-radius: 4px; 
+            margin-right: 8px; font-size: 0.75rem; font-weight: 900;
+            border: 1px solid rgba(0,0,0,0.2);
+        }
+
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+
+    </style>
+</head>
+<body>
+
+    <!-- BARRA NAVEGACIÓN SUPERIOR -->
+    <div class="fixed top-0 left-0 w-full h-16 bg-slate-900/95 backdrop-blur border-b border-slate-800 z-50 flex justify-between items-center px-6">
+        <div class="flex flex-col">
+            <span class="text-xs text-sky-500 font-bold uppercase tracking-widest">Maestría en Derecho Constitucional</span>
+            <span class="text-xs text-slate-400">Derechos Humanos y Procesal Constitucional</span>
+        </div>
+        <button onclick="toggleIndex()" class="text-xs font-bold px-3 py-1.5 rounded bg-slate-800 border border-slate-700 hover:bg-slate-700 transition flex items-center gap-2 text-white">
+            <i class="ph ph-list-dashes text-lg"></i> ÍNDICE
+        </button>
+    </div>
+
+    <!-- MODAL ÍNDICE -->
+    <div id="indexModal" class="fixed inset-0 z-[60] bg-black/80 hidden flex justify-center items-center p-4">
+        <div class="bg-slate-900 w-full max-w-lg rounded-xl border border-slate-700 shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
+            <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-800">
+                <h3 class="font-serif text-white">Índice del Curso</h3>
+                <button onclick="toggleIndex()" class="text-slate-400 hover:text-white"><i class="ph ph-x text-lg"></i></button>
+            </div>
+            <div class="overflow-y-auto p-2 space-y-1 text-sm">
+                <button onclick="go(0)" class="w-full text-left p-2 hover:bg-slate-800 rounded text-slate-300">Portada</button>
+                <button onclick="go(1)" class="w-full text-left p-2 hover:bg-slate-800 rounded text-slate-300">1. Contexto Histórico (Intro)</button>
+                <button onclick="go(2)" class="w-full text-left p-2 hover:bg-slate-800 rounded text-slate-300">1.1 La República de Weimar</button>
+                <button onclick="go(3)" class="w-full text-left p-2 hover:bg-slate-800 rounded text-slate-300">1.2 Los Protagonistas</button>
+                <button onclick="go(4)" class="w-full text-left p-2 hover:bg-slate-800 rounded text-slate-300">1.3 El Debate</button>
+                <button onclick="go(5)" class="w-full text-left p-2 hover:bg-slate-800 rounded text-slate-300">2. Concepción de Constitución</button>
+                <button onclick="go(6)" class="w-full text-left p-2 hover:bg-slate-800 rounded text-slate-300">2.1 & 2.2 Norma vs Decisión</button>
+                <button onclick="go(7)" class="w-full text-left p-2 hover:bg-slate-800 rounded text-slate-300">3. Soberanía: Teorías</button>
+                <button onclick="go(8)" class="w-full text-left p-2 hover:bg-slate-800 rounded text-slate-300">3.3 El Estado de Excepción</button>
+                <button onclick="go(9)" class="w-full text-left p-2 hover:bg-slate-800 rounded text-slate-300">4. Democracia y Parlamentarismo</button>
+                <button onclick="go(10)" class="w-full text-left p-2 hover:bg-slate-800 rounded text-indigo-300 font-bold border-l-2 border-indigo-500">ACTIVIDAD: Democracia</button>
+                <button onclick="go(11)" class="w-full text-left p-2 hover:bg-slate-800 rounded text-slate-300">5. El Guardián Kelsen (TC)</button>
+                <button onclick="go(12)" class="w-full text-left p-2 hover:bg-slate-800 rounded text-slate-300">5.2 Fundamentación Kelsen</button>
+                <button onclick="go(13)" class="w-full text-left p-2 hover:bg-slate-800 rounded text-slate-300">5.3 Experiencia Austriaca</button>
+                <button onclick="go(14)" class="w-full text-left p-2 hover:bg-slate-800 rounded text-slate-300">6. El Guardián Schmitt (Presidente)</button>
+                <button onclick="go(15)" class="w-full text-left p-2 hover:bg-slate-800 rounded text-slate-300">6.2 Crítica a la Justicia Const.</button>
+                <button onclick="go(16)" class="w-full text-left p-2 hover:bg-slate-800 rounded text-red-300 font-bold border-l-2 border-red-500">7. LA POLÉMICA DE 1931 (Schmitt)</button>
+                <button onclick="go(17)" class="w-full text-left p-2 hover:bg-slate-800 rounded text-sky-300 font-bold border-l-2 border-sky-500">7.2 La Respuesta de Kelsen</button>
+                <button onclick="go(18)" class="w-full text-left p-2 hover:bg-slate-800 rounded text-slate-300">7.3 Balance de la Confrontación</button>
+                <button onclick="go(19)" class="w-full text-left p-2 hover:bg-slate-800 rounded text-slate-300">8. Influencia y Legado</button>
+                <button onclick="go(20)" class="w-full text-left p-2 hover:bg-slate-800 rounded text-slate-300">8.3 El Guardián Actual</button>
+                <button onclick="go(21)" class="w-full text-left p-2 hover:bg-slate-800 rounded text-slate-300">9. Conclusiones</button>
+                <button onclick="go(22)" class="w-full text-left p-2 hover:bg-slate-800 rounded text-slate-300">9.3 Reflexión Final</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENEDOR SLIDES -->
+    <div id="slider-container">
+
+        <!-- SLIDE 0: PORTADA -->
+        <div class="slide active justify-center" id="slide-0">
+            <div class="text-center px-4 animate-fade-in-up max-w-4xl">
+                <div class="inline-flex gap-4 mb-8">
+                    <span class="px-3 py-1 bg-sky-900/50 text-sky-400 rounded-full text-xs font-bold border border-sky-500/30">NORMA</span>
+                    <span class="px-3 py-1 bg-red-900/50 text-red-400 rounded-full text-xs font-bold border border-red-500/30">DECISIÓN</span>
+                </div>
+                <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-sky-400 via-slate-200 to-red-400">
+                    El Debate Kelsen vs. Schmitt
+                </h1>
+                <h2 class="text-xl md:text-2xl text-slate-400 font-light mb-8 italic serif">
+                    “El Rol del Guardián de la Constitución”
+                </h2>
+                <div class="p-6 bg-slate-800/50 backdrop-blur rounded-xl border border-slate-700 max-w-lg mx-auto shadow-2xl">
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Docente</p>
+                    <p class="text-white text-lg font-serif">M.Sc. Alberto Mercado Carrasco</p>
+                </div>
+                <p class="mt-12 text-sm text-slate-500">Usa las flechas o el botón siguiente</p>
+            </div>
+        </div>
+
+        <!-- 1. CONTEXTO HISTÓRICO -->
+        <!-- SLIDE 1 -->
+        <div class="slide" id="slide-1">
+            <div class="max-w-5xl w-full">
+                <h2 class="text-3xl font-bold mb-6 border-b border-slate-700 pb-2">1. Introducción al Contexto</h2>
+                <p class="text-slate-400 mb-8 max-w-3xl">No es una pelea de juristas, es una discusión sobre qué ocurre cuando las reglas se quiebran.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-slate-800 p-6 rounded-xl border-l-4 border-sky-500">
+                        <h3 class="text-xl font-bold text-sky-400 mb-2">Kelsen: Precisión Quirúrgica</h3>
+                        <p class="text-sm text-slate-300 text-justify">
+                            Obsesionado con separar la moral de la norma. Creó una teoría pura del Derecho. Su lema: "La Constitución no necesita héroes, necesita reglas".
+                        </p>
+                    </div>
+                    <div class="bg-slate-800 p-6 rounded-xl border-l-4 border-red-500">
+                        <h3 class="text-xl font-bold text-red-400 mb-2">Schmitt: El Abismo</h3>
+                        <p class="text-sm text-slate-300 text-justify">
+                            No confiaba en las reglas en crisis. Cuando el sistema se tambalea, alguien debe decidir. "Soberano es quien decide en la excepción".
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: 1.1 WEIMAR -->
+        <div class="slide" id="slide-2">
+            <h2 class="text-3xl font-bold mb-4">1.1 La República de Weimar</h2>
+            <div class="flip-grid mx-auto">
+                <div class="flip-card" onclick="flip(this)">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><i class="ph ph-bank text-5xl text-amber-400 mb-4"></i><h3 class="text-xl font-bold text-white">¿Qué fue Weimar?</h3></div>
+                        <div class="flip-card-back bg-slate-900"><h4 class="font-bold text-amber-400 mb-2">1919-1933</h4><p class="text-sm text-slate-300 px-2">Estado alemán nacido tras la I Guerra Mundial. Constitución democrática avanzada pero con un vacío fatal: <strong>no decía quién debía custodiarla</strong>.</p></div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="flip(this)">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><i class="ph ph-warning-octagon text-5xl text-red-400 mb-4"></i><h3 class="text-xl font-bold text-white">El Artículo 48</h3></div>
+                        <div class="flip-card-back bg-slate-900"><h4 class="font-bold text-red-400 mb-2">El Detonante</h4><p class="text-sm text-slate-300 px-2">Poderes de emergencia. En 1932, el Presidente intervino Prusia. ¿Era defensa constitucional o dictadura? Esto desató el debate.</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: 1.2 PROTAGONISTAS -->
+        <div class="slide" id="slide-3">
+            <h2 class="text-3xl font-bold mb-8">1.2 Los Protagonistas</h2>
+            <div class="flex flex-col md:flex-row gap-8 max-w-5xl w-full justify-center">
+                <div class="flex-1 flip-card h-[400px]" onclick="flip(this)">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front border-sky-500 border-t-8"><div class="w-24 h-24 bg-sky-900 rounded-full flex items-center justify-center mb-4 border-2 border-sky-500 mx-auto"><span class="text-3xl font-bold text-sky-400">HK</span></div><h3 class="text-2xl font-bold text-sky-400">Hans Kelsen</h3><p class="text-slate-400">1881-1973</p></div>
+                        <div class="flip-card-back bg-kelsen-gradient"><h3 class="text-xl font-bold text-white mb-2">El Normativista</h3><ul class="text-left text-sm list-disc px-6 space-y-2"><li>Austriaco.</li><li>Autor Constitución 1920.</li><li>Defensor de la democracia liberal y el pluralismo.</li><li><strong>Estado = Orden Jurídico.</strong></li></ul></div>
+                    </div>
+                </div>
+                <div class="flex-1 flip-card h-[400px]" onclick="flip(this)">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front border-red-500 border-t-8"><div class="w-24 h-24 bg-red-900 rounded-full flex items-center justify-center mb-4 border-2 border-red-500 mx-auto"><span class="text-3xl font-bold text-red-400">CS</span></div><h3 class="text-2xl font-bold text-red-400">Carl Schmitt</h3><p class="text-slate-400">1888-1985</p></div>
+                        <div class="flip-card-back bg-schmitt-gradient"><h3 class="text-xl font-bold text-white mb-2">El Decisionista</h3><ul class="text-left text-sm list-disc px-6 space-y-2"><li>Alemán.</li><li>Crítico del parlamentarismo.</li><li>Defensor del poder fuerte.</li><li><strong>Soberanía = Decisión.</strong></li></ul></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 4: 1.3 ORIGEN DEL DEBATE -->
+        <div class="slide" id="slide-4">
+            <h2 class="text-3xl font-bold mb-4">1.3 ¿Dónde surgió?</h2>
+            <div class="w-full max-w-3xl space-y-4">
+                <div class="q-capsule" onclick="toggleCapsule(this)">
+                    <div class="q-icon bg-indigo-600"><i class="ph ph-books"></i></div>
+                    <div class="q-content"><span class="q-title">1931: El Año Clave</span><div class="q-text">Schmitt publica "El guardián de la Constitución". Kelsen responde meses después con "¿Quién debe ser el guardián?".</div></div>
+                </div>
+                <div class="q-capsule" onclick="toggleCapsule(this)">
+                    <div class="q-icon bg-slate-600"><i class="ph ph-warning-circle"></i></div>
+                    <div class="q-content"><span class="q-title">El Problema Central</span><div class="q-text">Alemania quedó atrapada entre dos formas de proteger el orden: una desde la política (fuerza presidencial) y otra desde el derecho (control judicial).</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. CONCEPCIÓN DE CONSTITUCIÓN -->
+        <!-- SLIDE 5 -->
+        <div class="slide" id="slide-5">
+            <h2 class="text-3xl font-bold mb-4">2. Concepción de la Constitución</h2>
+            <p class="text-slate-400 mb-6 text-center">Norma Jurídica vs. Decisión Política</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-6xl">
+                <div class="bg-slate-800 p-6 rounded-xl border border-sky-900">
+                    <h3 class="text-xl font-bold text-sky-400 mb-2">2.1 Hans Kelsen</h3>
+                    <p class="text-sm text-slate-300 mb-3"><strong>Norma Suprema y Control Legal</strong></p>
+                    <ul class="text-xs text-slate-400 list-disc pl-4 space-y-2">
+                        <li>Cúspide de la pirámide normativa.</li>
+                        <li>Función: Poner límites jurídicos al poder.</li>
+                        <li>Excluye elementos sociológicos (Teoría Pura).</li>
+                    </ul>
+                </div>
+                <div class="bg-slate-800 p-6 rounded-xl border border-red-900">
+                    <h3 class="text-xl font-bold text-red-400 mb-2">2.2 Carl Schmitt</h3>
+                    <p class="text-sm text-slate-300 mb-3"><strong>Decisión Originaria y Unidad Política</strong></p>
+                    <ul class="text-xs text-slate-400 list-disc pl-4 space-y-2">
+                        <li>Voluntad política fundamental del pueblo.</li>
+                        <li>Distingue: "Constitución" (el todo) vs "Leyes Constitucionales".</li>
+                        <li>Defensa: Preservar la existencia política del Estado.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 6: DEBATE INTERACTIVO EJE 2 -->
+        <div class="slide" id="slide-6">
+            <h2 class="text-2xl font-bold mb-4 text-indigo-300">Debate: Norma vs. Decisión</h2>
+            <div class="w-full max-w-3xl space-y-4">
+                <div class="q-capsule" onclick="toggleCapsule(this)">
+                    <div class="q-icon bg-sky-700"><i class="ph ph-gavel"></i></div>
+                    <div class="q-content"><span class="q-title">Kelsen: Principio de Legalidad</span><div class="q-text">Todo poder está limitado por el Derecho. La defensa de la Constitución debe ser institucional y objetiva, no política.</div></div>
+                </div>
+                <div class="q-capsule" onclick="toggleCapsule(this)">
+                    <div class="q-icon bg-red-700"><i class="ph ph-lightning"></i></div>
+                    <div class="q-content"><span class="q-title">Schmitt: Realidad Política</span><div class="q-text">"No existe Constitución pura al margen de la política". En crisis, el elemento político prevalece. "Las cuestiones políticas no son justiciables".</div></div>
+                </div>
+                <div class="q-capsule" onclick="toggleCapsule(this)">
+                    <div class="q-icon bg-indigo-600"><i class="ph ph-question"></i></div>
+                    <div class="q-content"><span class="q-title">Pregunta para Debate</span><div class="q-text">¿Creen que Kelsen y Schmitt entienden lo mismo por "defender la Constitución"? ¿O defienden cosas distintas (normas vs voluntad)?</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. SOBERANÍA Y EXCEPCIÓN -->
+        <!-- SLIDE 7 -->
+        <div class="slide" id="slide-7">
+            <h2 class="text-3xl font-bold mb-4">3. Soberanía y Estado de Excepción</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-6xl">
+                <div class="bg-slate-800 p-5 rounded-lg border-t-4 border-sky-500">
+                    <h4 class="font-bold text-sky-400 mb-2">3.1 Normativista (Kelsen)</h4>
+                    <p class="text-sm text-slate-300 text-justify">La soberanía es del <strong>orden jurídico</strong>, no de una persona. No hay "excepción" fuera del derecho. Si se actúa fuera de la norma, es un acto inválido o un golpe de Estado.</p>
+                </div>
+                <div class="bg-slate-800 p-5 rounded-lg border-t-4 border-red-500">
+                    <h4 class="font-bold text-red-400 mb-2">3.2 Decisionista (Schmitt)</h4>
+                    <p class="text-sm text-slate-300 text-justify">"Soberano es quien decide sobre el estado de excepción". El poder real se revela en la crisis. La soberanía es anterior a la ley y reside en quien tiene la capacidad fáctica de decidir.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 8 -->
+        <div class="slide" id="slide-8">
+            <h2 class="text-2xl font-bold mb-4 text-amber-300">3.3 El Estado de Excepción</h2>
+            <div class="w-full max-w-4xl space-y-4">
+                <div class="q-capsule" onclick="toggleCapsule(this)">
+                    <div class="q-icon bg-amber-600"><i class="ph ph-warning-octagon"></i></div>
+                    <div class="q-content"><span class="q-title">¿Laguna Legal o Prueba de Fuego?</span><div class="q-text">Para Kelsen, debe evitarse o regularse constitucionalmente (no hay vacíos). Para Schmitt, es inevitable y alguien (el Presidente) debe tener el poder de suspender el derecho para salvarlo.</div></div>
+                </div>
+                 <div class="q-capsule" onclick="toggleCapsule(this)">
+                    <div class="q-icon bg-slate-600"><i class="ph ph-clock-counter-clockwise"></i></div>
+                    <div class="q-content"><span class="q-title">La Paradoja de Weimar</span><div class="q-text">El uso constante del Art. 48 volvió la excepción una regla. Schmitt lo veía como prueba de que el Presidente era el soberano. Kelsen lo veía como erosión de la legalidad.</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. DEMOCRACIA Y PARLAMENTARISMO -->
+        <!-- SLIDE 9 -->
+        <div class="slide" id="slide-9">
+            <h2 class="text-3xl font-bold mb-4">4. Democracia y Parlamentarismo</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-6xl">
+                <div class="bg-slate-800 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold text-sky-400 mb-2">4.1 Kelsen: Parlamentaria</h3>
+                    <ul class="text-sm text-slate-300 list-disc pl-4 space-y-2">
+                        <li>Defensa del <strong>pluralismo</strong> y los partidos políticos.</li>
+                        <li>La democracia es compromiso, debate racional y protección de minorías.</li>
+                        <li>El Parlamento es el corazón de la legitimidad.</li>
+                    </ul>
+                </div>
+                <div class="bg-slate-800 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold text-red-400 mb-2">4.2 Schmitt: Sustantiva</h3>
+                    <ul class="text-sm text-slate-300 list-disc pl-4 space-y-2">
+                        <li>El Parlamento es un "club de discusión" ineficaz.</li>
+                        <li>Propone una democracia <strong>plebiscitaria</strong>.</li>
+                        <li>Basada en la identidad y homogeneidad (pueblo unido).</li>
+                        <li>Prefiere la aclamación de un líder fuerte.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 10: JUEGO DEMOCRACIA (Actividad 4) -->
+        <div class="slide" id="slide-10">
+            <h2 class="text-2xl font-bold mb-2 text-amber-400">Actividad: Visiones de Democracia</h2>
+            <p class="text-sm text-slate-400 mb-4 text-center bg-slate-800 px-4 py-2 rounded-full inline-block">
+                Arrastra la ficha hacia el concepto correcto.
+            </p>
+            <div class="game-area flex-col md:flex-row">
+                <div class="game-source order-2 md:order-1 w-full md:w-1/3 p-4 bg-slate-800 rounded-lg">
+                    <div class="draggable-token" onclick="selectToken(this)" data-target="kelsen"><span class="token-tag text-sky-400 bg-slate-900">HK</span> Pluralismo</div>
+                    <div class="draggable-token" onclick="selectToken(this)" data-target="schmitt"><span class="token-tag text-red-400 bg-slate-900">CS</span> Identidad Homogénea</div>
+                    <div class="draggable-token" onclick="selectToken(this)" data-target="kelsen"><span class="token-tag text-sky-400 bg-slate-900">HK</span> Debate Racional</div>
+                    <div class="draggable-token" onclick="selectToken(this)" data-target="schmitt"><span class="token-tag text-red-400 bg-slate-900">CS</span> Aclamación Popular</div>
+                </div>
+                <div class="game-targets order-1 md:order-2 w-full md:w-2/3 flex flex-col md:flex-row gap-4">
+                    <div class="target-box" id="target-kelsen" onclick="checkDrop('kelsen')"><h3 class="text-sky-400 font-bold mb-2">Parlamentarismo</h3><div class="target-content w-full flex flex-col gap-2"></div></div>
+                    <div class="target-box" id="target-schmitt" onclick="checkDrop('schmitt')"><h3 class="text-red-400 font-bold mb-2">Plebiscitaria</h3><div class="target-content w-full flex flex-col gap-2"></div></div>
+                </div>
+            </div>
+            <div id="game-feedback" class="h-8 mt-2 text-green-400 font-bold text-sm text-center"></div>
+        </div>
+
+        <!-- 5. EL GUARDIÁN KELSEN -->
+        <!-- SLIDE 11 -->
+        <div class="slide" id="slide-11">
+            <h2 class="text-3xl font-bold text-sky-400 mb-4">5. El Guardián según Kelsen</h2>
+            <h3 class="text-xl text-white mb-8">El Tribunal Constitucional</h3>
+            <div class="w-full max-w-4xl space-y-4">
+                 <div class="q-capsule expanded">
+                    <div class="q-icon bg-sky-900 text-sky-400"><i class="ph ph-scales"></i></div>
+                    <div class="q-content" style="display:block; opacity:1;"><span class="q-title">5.1 Justicia Centralizada</span><div class="q-text">Propone un órgano especializado (TC) para resolver conflictos de normas. La defensa de la Constitución debe ser por vía jurídica, no política. "Legislador Negativo": anula leyes inconstitucionales.</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 12 -->
+        <div class="slide" id="slide-12">
+            <h2 class="text-2xl font-bold mb-4 text-sky-300">5.2 Fundamentación Kelseniana</h2>
+            <div class="w-full max-w-4xl space-y-4">
+                <div class="q-capsule" onclick="toggleCapsule(this)">
+                    <div class="q-icon bg-sky-800"><i class="ph ph-scales"></i></div>
+                    <div class="q-content"><span class="q-title">Imparcialidad</span><div class="q-text">"Nadie debe ser juez en su propia causa". Entregar al Presidente el control es absurdo; él es parte interesada. Se requiere un tercero neutral.</div></div>
+                </div>
+                <div class="q-capsule" onclick="toggleCapsule(this)">
+                    <div class="q-icon bg-sky-800"><i class="ph ph-gavel"></i></div>
+                    <div class="q-content"><span class="q-title">Primacía del Derecho</span><div class="q-text">La Constitución se defiende con argumentos legales, no con bayonetas. Transformar conflictos políticos en jurídicos es la esencia del Estado de Derecho.</div></div>
+                </div>
+                <div class="q-capsule" onclick="toggleCapsule(this)">
+                    <div class="q-icon bg-sky-800"><i class="ph ph-users"></i></div>
+                    <div class="q-content"><span class="q-title">Protección de Minorías</span><div class="q-text">Un Tribunal independiente frena la tiranía de la mayoría parlamentaria y protege derechos fundamentales.</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 13 -->
+        <div class="slide" id="slide-13">
+            <h2 class="text-2xl font-bold mb-4 text-sky-300">5.3 Experiencia Austriaca</h2>
+            <div class="flip-grid mx-auto">
+                <div class="flip-card" onclick="flip(this)">
+                    <div class="flip-card-inner">
+                         <div class="flip-card-front border-sky-500 border-t-8"><h3 class="text-2xl font-bold text-sky-400 mt-10">El Modelo de Viena</h3><p class="text-slate-400 mt-4">1920</p></div>
+                         <div class="flip-card-back bg-slate-900 border border-sky-500/50"><h4 class="font-bold text-white mb-2 mt-10">Pionero</h4><p class="text-sm text-slate-300 px-4">Diseñado por Kelsen. Demostró que un órgano jurídico podía frenar actos legislativos sin colapso político, aunque fue ignorado por el autoritarismo en 1933.</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. EL GUARDIÁN SCHMITT -->
+        <!-- SLIDE 14 -->
+        <div class="slide" id="slide-14">
+            <h2 class="text-3xl font-bold text-red-400 mb-4">6. El Guardián según Schmitt</h2>
+            <h3 class="text-xl text-white mb-8">El Presidente del Reich</h3>
+            <div class="max-w-4xl bg-slate-800 border-2 border-red-500/50 p-8 rounded-xl text-center">
+                <p class="text-lg text-slate-300 italic mb-6">"¿Quién custodia al parlamento cuando éste actúa inconstitucionalmente? Un juez no puede salvar al Estado; un líder sí."</p>
+                <div class="text-left bg-slate-900 p-4 rounded border border-slate-700">
+                    <h4 class="font-bold text-white mb-2">6.1 La Tesis del Defensor</h4>
+                    <p class="text-sm text-slate-300">Schmitt argumenta en "El defensor de la Constitución" (1931) que el Presidente es el guardián natural. Representa la unidad del pueblo frente a la fragmentación del Parlamento y tiene poderes de emergencia (Art. 48) para actuar.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 15 -->
+        <div class="slide" id="slide-15">
+            <h2 class="text-2xl font-bold mb-4 text-red-300">6.2 y 6.3 Fundamentos de Schmitt</h2>
+            <div class="w-full max-w-4xl space-y-4">
+                <div class="q-capsule" onclick="toggleCapsule(this)">
+                    <div class="q-icon bg-red-800"><i class="ph ph-x-circle"></i></div>
+                    <div class="q-content"><span class="q-title">6.2 Crítica a la Justicia Constitucional</span><div class="q-text">"Las cuestiones políticas no son justiciables". Un juez comparando normas hace política, no derecho. Riesgo de "Juristocracia" (gobierno de jueces) y falta de energía en crisis.</div></div>
+                </div>
+                <div class="q-capsule" onclick="toggleCapsule(this)">
+                    <div class="q-icon bg-red-800"><i class="ph ph-crown"></i></div>
+                    <div class="q-content"><span class="q-title">6.3 Perfil del Guardián Político</span><div class="q-text">Debe tener <strong>legitimidad democrática directa</strong> (voto popular) y <strong>capacidad decisoria</strong> (fuerza real, Ejército). Actúa como "Poder Neutro" por encima de partidos.</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. LA POLÉMICA DE 1931 -->
+        <!-- SLIDE 16 -->
+        <div class="slide" id="slide-16">
+            <h2 class="text-3xl font-bold mb-4 text-white">7. La Polémica de 1931</h2>
+            <div class="bg-slate-800 p-6 rounded-lg border-l-4 border-red-500 max-w-4xl">
+                <h3 class="text-xl font-bold text-red-400 mb-2">7.1 Argumentos de Schmitt</h3>
+                <ul class="space-y-3 text-sm text-slate-300 text-justify">
+                    <li>• <strong>Unidad:</strong> La defensa debe recaer en quien represente la unidad política (Presidente), no en un juez.</li>
+                    <li>• <strong>No justiciable:</strong> Comparar leyes con la Constitución es un acto político, no una subsunción técnica.</li>
+                    <li>• <strong>Politización:</strong> Los jueces inevitablemente fallarán según sus inclinaciones políticas personales.</li>
+                    <li>• <strong>Fracaso Viena:</strong> El modelo de Kelsen en Austria no evitó la polarización.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SLIDE 17 -->
+        <div class="slide" id="slide-17">
+            <h2 class="text-3xl font-bold mb-4 text-sky-400">7.2 La Respuesta de Kelsen</h2>
+            <div class="bg-slate-800 p-6 rounded-lg border-l-4 border-sky-500 max-w-4xl">
+                <h3 class="text-xl font-bold text-sky-400 mb-2">Argumentos de Kelsen</h3>
+                <ul class="space-y-3 text-sm text-slate-300 text-justify">
+                    <li>• <strong>Estado de Derecho:</strong> Gobierno de leyes. Si el Presidente no tiene control, es un dictador potencial.</li>
+                    <li>• <strong>Juez y Parte:</strong> El Presidente es poder ejecutivo; no puede juzgarse a sí mismo.</li>
+                    <li>• <strong>Normalidad:</strong> Todo conflicto político puede traducirse a jurídico.</li>
+                    <li>• <strong>Mal Menor:</strong> La "politización" judicial es asumida y preferible a la tiranía sin control.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- SLIDE 18 -->
+        <div class="slide" id="slide-18">
+            <h2 class="text-2xl font-bold mb-4 text-indigo-300">7.3 Balance de la Confrontación</h2>
+            <div class="w-full max-w-3xl space-y-4">
+                <div class="q-capsule" onclick="toggleCapsule(this)">
+                    <div class="q-icon bg-indigo-600"><i class="ph ph-chat-circle-text"></i></div>
+                    <div class="q-content"><span class="q-title">Un Diálogo Agrio</span><div class="q-text">Fue un "diálogo de sordos". Partían de marcos irreconciliables. La caída de Weimar dio la razón histórica a Kelsen sobre el peligro del caudillismo, pero Schmitt advirtió sobre la debilidad política.</div></div>
+                </div>
+                <div class="q-capsule" onclick="toggleCapsule(this)">
+                    <div class="q-icon bg-slate-600"><i class="ph ph-user-focus"></i></div>
+                    <div class="q-content"><span class="q-title">Pregunta de Debate (Eje 7)</span><div class="q-text">De los argumentos de 1931, ¿cuáles les parecen más sólidos? ¿Hubieran apoyado al Tribunal o al Presidente Hindenburg en medio del caos?</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 8. INFLUENCIA Y LEGADO -->
+        <!-- SLIDE 19 -->
+        <div class="slide" id="slide-19">
+            <h2 class="text-3xl font-bold mb-6">8. Influencia y Legado</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl">
+                <div class="bg-slate-800 p-6 rounded-lg shadow-lg border-t-4 border-sky-500">
+                    <h3 class="text-xl font-bold text-sky-400 mb-4">8.1 El Triunfo Kelseniano</h3>
+                    <p class="text-slate-300 text-sm mb-4 text-justify">
+                        Tras la II Guerra Mundial, Europa adoptó el modelo de Kelsen (Tribunales Constitucionales en Alemania, Italia, España) para blindar la democracia contra nuevos totalitarismos. Se volvió el estándar global.
+                    </p>
+                </div>
+                <div class="bg-slate-800 p-6 rounded-lg shadow-lg border-t-4 border-red-500">
+                    <h3 class="text-xl font-bold text-red-400 mb-4">8.2 Vigencia de Schmitt</h3>
+                    <p class="text-slate-300 text-sm mb-4 text-justify">
+                        Sus críticas resurgen ante la "judicialización de la política": ¿Gobierno de jueces (Juristocracia)? ¿Politización de cortes? ¿Choque de legitimidades con el parlamento?
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 20 -->
+        <div class="slide" id="slide-20">
+            <h2 class="text-2xl font-bold mb-4 text-green-300">8.3 El Guardián Actual</h2>
+            <div class="w-full max-w-4xl space-y-4">
+                <div class="q-capsule" onclick="toggleCapsule(this)">
+                    <div class="q-icon bg-green-700"><i class="ph ph-users-four"></i></div>
+                    <div class="q-content"><span class="q-title">Concepto Moderno</span><div class="q-text">Hoy el guardián es difuso: Tribunales Constitucionales, pero también Defensorías del Pueblo, Ministerios Públicos y Sociedad Civil. "Múltiples guardianes bajo la supremacía constitucional".</div></div>
+                </div>
+                <div class="q-capsule" onclick="toggleCapsule(this)">
+                    <div class="q-icon bg-indigo-600"><i class="ph ph-question"></i></div>
+                    <div class="q-content"><span class="q-title">Pregunta de Debate (Eje 8)</span><div class="q-text">¿Opinan que la generalización de los Tribunales Constitucionales ha sido positiva? ¿Ven casos actuales que ilustren las críticas de Schmitt sobre jueces legislando?</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 9. CONCLUSIONES -->
+        <!-- SLIDE 21 -->
+        <div class="slide" id="slide-21">
+            <h2 class="text-4xl font-bold mb-6 text-white">9. Conclusiones</h2>
+            <div class="bg-slate-800 p-8 rounded-xl border border-purple-500/30 shadow-2xl text-left max-w-4xl">
+                <div class="mb-6 border-b border-slate-700 pb-4">
+                    <h3 class="text-xl font-bold text-sky-300 mb-2">9.1 Diferencias Fundamentales</h3>
+                    <p class="text-slate-300 text-sm">Legalidad (Kelsen) vs Legitimidad/Fuerza (Schmitt). ¿Confiamos en las leyes o en los hombres?</p>
+                </div>
+                <div class="mb-6 border-b border-slate-700 pb-4">
+                    <h3 class="text-xl font-bold text-amber-300 mb-2">9.2 Lecciones Aprendidas</h3>
+                    <p class="text-slate-300 text-sm">
+                        Positiva: El control jurídico robusto frena abusos (modelo Kelsen). <br>
+                        Negativa: Un guardián político sin contrapesos facilita la destrucción de la democracia (experiencia Weimar).
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SLIDE 22 -->
+        <div class="slide" id="slide-22">
+            <h2 class="text-2xl font-bold mb-6 text-indigo-400">9.3 Debates Abiertos</h2>
+            <div class="w-full max-w-3xl space-y-4">
+                <div class="q-capsule" onclick="toggleCapsule(this)">
+                    <div class="q-icon bg-slate-700"><i class="ph ph-user-focus"></i></div>
+                    <div class="q-content"><span class="q-title">Reflexión Final</span><div class="q-text">¿Es la justicia constitucional un "mal necesario" para protegernos de nosotros mismos, o un "bien positivo" que mejora la calidad democrática?</div></div>
+                </div>
+                <div class="q-capsule" onclick="toggleCapsule(this)">
+                    <div class="q-icon bg-indigo-700"><i class="ph ph-star"></i></div>
+                    <div class="q-content"><span class="q-title">El Guardián Ideal</span><div class="q-text">¿Cómo definirían al "guardián de la Constitución" ideal en el siglo XXI? ¿Qué cualidades y límites debería tener?</div></div>
+                </div>
+                <div class="mt-8 text-center">
+                    <p class="text-2xl text-white italic mt-6">"¿Quién vigila al vigilante?"</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CONTROLES -->
+    <div class="fixed bottom-0 w-full p-4 bg-slate-900 border-t border-slate-800 z-50 flex justify-between items-center">
+        <button id="prevBtn" onclick="changeSlide(-1)" class="flex items-center gap-2 px-6 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 transition disabled:opacity-50 text-sm font-bold">
+            <i class="ph ph-arrow-left"></i> Anterior
+        </button>
+
+        <span id="slideIndicator" class="font-mono text-indigo-400 font-bold text-lg">1 / 23</span>
+
+        <button id="nextBtn" onclick="changeSlide(1)" class="flex items-center gap-2 px-6 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 transition shadow-lg text-sm font-bold text-white">
+            Siguiente <i class="ph ph-arrow-right"></i>
+        </button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const indicator = document.getElementById('slideIndicator');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        let selectedToken = null;
+
+        function updateUI() {
+            slides.forEach((s, index) => {
+                s.classList.toggle('active', index === currentSlide);
+            });
+
+            prevBtn.disabled = currentSlide === 0;
+            if (currentSlide === totalSlides - 1) {
+                nextBtn.innerHTML = 'Finalizar <i class="ph ph-check ml-2"></i>';
+                nextBtn.classList.replace('bg-indigo-600', 'bg-green-600');
+            } else {
+                nextBtn.innerHTML = 'Siguiente <i class="ph ph-arrow-right ml-2"></i>';
+                nextBtn.classList.replace('bg-green-600', 'bg-indigo-600');
+            }
+            
+            indicator.innerText = `${currentSlide + 1} / ${totalSlides}`;
+            document.getElementById('indexModal').classList.add('hidden');
+        }
+
+        function changeSlide(dir) {
+            const newIndex = currentSlide + dir;
+            if (newIndex >= 0 && newIndex < totalSlides) {
+                currentSlide = newIndex;
+                updateUI();
+            }
+        }
+        
+        function go(index) {
+            currentSlide = index;
+            updateUI();
+        }
+
+        function toggleIndex() { document.getElementById('indexModal').classList.toggle('hidden'); }
+        function flip(card) { card.classList.toggle('flipped'); }
+        function toggleCapsule(el) { el.classList.toggle('expanded'); }
+
+        // --- GAME LOGIC ---
+        function selectToken(element) {
+            if(element.classList.contains('matched')) return;
+            if(selectedToken) selectedToken.classList.remove('selected');
+            selectedToken = element;
+            selectedToken.classList.add('selected');
+            
+            const feedback = document.getElementById('game-feedback');
+            if(feedback) {
+                feedback.innerText = "Ahora toca la caja correcta.";
+                feedback.className = "h-8 mt-2 text-indigo-400 font-bold text-sm text-center";
+            }
+        }
+
+        function checkDrop(targetType) {
+            if(!selectedToken) return;
+            const tokenTarget = selectedToken.getAttribute('data-target');
+            const feedback = document.getElementById('game-feedback');
+            
+            // Buscar target box en el slide actual
+            const currentSlideEl = slides[currentSlide];
+            let targetBox = currentSlideEl.querySelector(`#target-${targetType}`);
+            // Fallback para IDs con sufijo -demo si es necesario
+            if(!targetBox) targetBox = currentSlideEl.querySelector(`#target-${targetType}-demo`);
+
+            if(targetBox && tokenTarget === targetType) {
+                targetBox.querySelector('.target-content').appendChild(selectedToken);
+                selectedToken.classList.remove('selected');
+                selectedToken.classList.add('matched');
+                
+                if(tokenTarget === 'kelsen') {
+                    selectedToken.style.background = 'rgba(14, 165, 233, 0.2)';
+                    selectedToken.style.color = '#7dd3fc';
+                    selectedToken.style.border = '1px solid #0ea5e9';
+                } else {
+                    selectedToken.style.background = 'rgba(239, 68, 68, 0.2)';
+                    selectedToken.style.color = '#fca5a5';
+                    selectedToken.style.border = '1px solid #ef4444';
+                }
+
+                if(feedback) {
+                    feedback.innerText = "¡Correcto!";
+                    feedback.className = "h-8 mt-2 text-green-400 font-bold text-sm text-center";
+                }
+                selectedToken = null;
+            } else {
+                if(feedback) {
+                    feedback.innerText = "Incorrecto. Intenta de nuevo.";
+                    feedback.className = "h-8 mt-2 text-red-400 font-bold text-sm text-center animate-pulse";
+                }
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+        });
+
+        updateUI();
+    </script>
+</body>
+</html>
