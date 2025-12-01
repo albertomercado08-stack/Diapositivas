@@ -1,0 +1,308 @@
+import React, { useState } from 'react';
+import { BookOpen, Video, Cpu, Users, Clock, AlertTriangle, FileText, ChevronRight, ChevronDown, Scale, Lightbulb, UserCheck } from 'lucide-react';
+
+const ActivityBoard = () => {
+  const [activeTab, setActiveTab] = useState('preparacion');
+  const [expandedPremise, setExpandedPremise] = useState(null);
+
+  const togglePremise = (id) => {
+    if (expandedPremise === id) {
+      setExpandedPremise(null);
+    } else {
+      setExpandedPremise(id);
+    }
+  };
+
+  const content = {
+    preparacion: {
+      title: "1. Instrucción General de la Actividad",
+      subtitle: "Antes de asistir a clase, el estudiante debe interiorizar el contenido del caso mediante cualquiera de las siguientes opciones:",
+      options: [
+        {
+          id: "A",
+          icon: <BookOpen className="w-8 h-8 text-blue-600" />,
+          title: "Opción A: Lectura Directa",
+          desc: "El estudiante ingresa a la biblioteca digital de la UPDS y busca el texto: “Los Exploradores en la Caverna – Lon Fuller”. (Enlace disponible al pie).",
+          color: "bg-blue-50 border-blue-200"
+        },
+        {
+          id: "B",
+          icon: <Video className="w-8 h-8 text-red-600" />,
+          title: "Opción B: Video Explicativo",
+          desc: "El estudiante puede ver el video asignado por el docente, donde se resume el caso y se explican los hechos principales.",
+          color: "bg-red-50 border-red-200"
+        },
+        {
+          id: "C",
+          icon: <Cpu className="w-8 h-8 text-purple-600" />,
+          title: "Opción C: Apoyo de IA",
+          desc: "El estudiante puede usar Inteligencia Artificial (IA) para obtener un resumen del texto y estudiarlo.",
+          color: "bg-purple-50 border-purple-200"
+        }
+      ],
+      // Nuevo contenido del Punto 2 agregado aquí
+      dinamicaDocente: {
+        title: "2. Dinámica del Foro (Moderado por el Docente)",
+        text: "El foro será realizado en parejas, y los pares serán asignados exclusivamente por el docente para asegurar el orden, la equidad y la participación equilibrada."
+      }
+    },
+    premisas: {
+      title: "3. Premisas Sencillas del Caso",
+      subtitle: "Haz clic en cada premisa para revelar la pista jurídica oculta:",
+      list: [
+        { 
+          id: 1, 
+          text: "Los exploradores quedaron atrapados sin comida y solo podían sobrevivir tomando una decisión extrema.",
+          hint: "Pista Jurídica: ¿El 'Estado de Necesidad' justifica suspender la ley vigente? Piensa si la supervivencia biológica es un derecho superior a la norma escrita."
+        },
+        { 
+          id: 2, 
+          text: "El acto que cometieron fue motivado por la necesidad de vivir, no por maldad o intención de hacer daño.",
+          hint: "Pista Jurídica: Analiza el 'Mens Rea' (intención criminal). Si no hay malicia, ¿debería haber castigo? Distingue entre el acto voluntario y el acto forzoso."
+        },
+        { 
+          id: 3, 
+          text: "La ley que se aplica es muy clara y no hace excepciones para situaciones extremas.",
+          hint: "Pista Jurídica: Esto refiere al 'Positivismo Jurídico' o Textualismo. ¿Deben los jueces aplicar la letra muerta de la ley (Dura Lex, Sed Lex) o buscar su espíritu?"
+        },
+        { 
+          id: 4, 
+          text: "Los jueces no interpretan el caso de la misma manera: cada uno usa una forma diferente de entender el derecho.",
+          hint: "Pista Jurídica: Observarás distintas escuelas en pugna: Iusnaturalismo (moral superior), Positivismo (norma escrita) y Realismo (contexto social)."
+        },
+        { 
+          id: 5, 
+          text: "La decisión final no depende solo de la ley, sino también de cómo cada persona entiende la justicia, la moral y las presiones sociales.",
+          hint: "Pista Jurídica: El Derecho no es matemáticas. Considera cómo la opinión pública y la subjetividad ética del juez pueden influir en una sentencia técnica."
+        }
+      ]
+    },
+    estructura: { // Renombrado de dinamica a estructura (Punto 4)
+      title: "4. Estructura de Participación",
+      subtitle: "Sigue estrictamente estos pasos durante tu intervención:",
+      steps: [
+        {
+          phase: "Parte 1 (1 minuto y medio)",
+          time: "1:30 min",
+          points: [
+            "Presenta tu postura (culpables o inocentes).",
+            "Explica brevemente por qué.",
+            "Elige una premisa del caso y relaciónala con tu postura.",
+            "Identifica un hecho social o un valor personal que influyó en tu opinión."
+          ]
+        },
+        {
+          phase: "Parte 2 (Preguntas del docente)",
+          time: "Interacción",
+          points: [
+            "El docente realizará una pregunta breve para profundizar tu postura.",
+            "Debes responder manteniendo coherencia con tu argumento inicial."
+          ]
+        }
+      ]
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-100 p-4 md:p-8 font-sans text-slate-800">
+      
+      {/* Header Section */}
+      <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden mb-6">
+        <div className="bg-slate-900 p-6 text-white flex flex-col md:flex-row items-center justify-between">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="bg-amber-500 text-slate-900 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide">Actividad 1</span>
+              <span className="text-slate-400 text-sm">Foro Crítico</span>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-bold leading-tight">Caso: “Los Exploradores en la Caverna”</h1>
+            <p className="text-slate-300 mt-1">Derecho y Moral • Análisis Jurídico</p>
+          </div>
+          <div className="mt-4 md:mt-0 bg-slate-800 p-3 rounded-lg border border-slate-700">
+            <Scale className="w-8 h-8 text-amber-500 mx-auto mb-1" />
+            <span className="text-xs font-mono text-center block text-slate-300">EXPEDIENTE<br/>#UPDS-2024</span>
+          </div>
+        </div>
+
+        {/* Navigation Tabs */}
+        <div className="flex border-b border-slate-200 overflow-x-auto">
+          <button 
+            onClick={() => setActiveTab('preparacion')}
+            className={`flex-1 py-4 px-6 text-sm font-semibold flex items-center justify-center gap-2 transition-colors whitespace-nowrap ${activeTab === 'preparacion' ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50/50' : 'text-slate-500 hover:bg-slate-50'}`}
+          >
+            <BookOpen size={18} /> 1. y 2. Instrucción General
+          </button>
+          <button 
+            onClick={() => setActiveTab('premisas')}
+            className={`flex-1 py-4 px-6 text-sm font-semibold flex items-center justify-center gap-2 transition-colors whitespace-nowrap ${activeTab === 'premisas' ? 'text-amber-600 border-b-2 border-amber-600 bg-amber-50/50' : 'text-slate-500 hover:bg-slate-50'}`}
+          >
+            <FileText size={18} /> 3. Premisas del Caso
+          </button>
+          <button 
+            onClick={() => setActiveTab('estructura')}
+            className={`flex-1 py-4 px-6 text-sm font-semibold flex items-center justify-center gap-2 transition-colors whitespace-nowrap ${activeTab === 'estructura' ? 'text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50/50' : 'text-slate-500 hover:bg-slate-50'}`}
+          >
+            <Users size={18} /> 4. Estructura
+          </button>
+        </div>
+
+        {/* Dynamic Content Area */}
+        <div className="p-6 md:p-8 min-h-[400px]">
+          
+          {/* TAB: PREPARACIÓN (Incluye Punto 1 y 2) */}
+          {activeTab === 'preparacion' && (
+            <div className="animate-fade-in">
+              {/* Punto 1 */}
+              <h2 className="text-xl font-bold text-slate-800 mb-2">{content.preparacion.title}</h2>
+              <p className="text-slate-600 mb-6 text-sm md:text-base">{content.preparacion.subtitle}</p>
+              
+              <div className="grid md:grid-cols-3 gap-4 mb-8">
+                {content.preparacion.options.map((opt) => (
+                  <div key={opt.id} className={`p-6 rounded-xl border-2 hover:shadow-lg transition-all cursor-default group ${opt.color}`}>
+                    <div className="bg-white w-12 h-12 rounded-full flex items-center justify-center shadow-sm mb-4 group-hover:scale-110 transition-transform">
+                      {opt.icon}
+                    </div>
+                    <h3 className="font-bold text-lg mb-2">{opt.title}</h3>
+                    <p className="text-sm text-slate-700 leading-relaxed font-medium">{opt.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Separator */}
+              <hr className="border-slate-200 mb-8" />
+
+              {/* Punto 2 */}
+              <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-6 flex flex-col md:flex-row items-start gap-4">
+                 <div className="bg-white p-3 rounded-full shadow-sm text-indigo-600">
+                    <UserCheck className="w-6 h-6" />
+                 </div>
+                 <div>
+                    <h3 className="font-bold text-lg text-indigo-900 mb-1">{content.preparacion.dinamicaDocente.title}</h3>
+                    <p className="text-indigo-800 leading-relaxed">
+                       {content.preparacion.dinamicaDocente.text}
+                    </p>
+                 </div>
+              </div>
+
+              <div className="mt-8 bg-slate-50 p-4 rounded-lg border border-slate-200 flex items-start gap-3">
+                <AlertTriangle className="text-amber-500 w-5 h-5 mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-slate-600">
+                  <strong>Recordatorio:</strong> Es indispensable interiorizar el contenido <em>antes</em> de la clase para poder participar en el debate.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* TAB: PREMISAS (Expandable) */}
+          {activeTab === 'premisas' && (
+            <div className="animate-fade-in">
+              <h2 className="text-xl font-bold text-slate-800 mb-2">{content.premisas.title}</h2>
+              <p className="text-slate-600 mb-6 text-sm md:text-base">{content.premisas.subtitle}</p>
+
+              <div className="space-y-3">
+                {content.premisas.list.map((premise) => (
+                  <div 
+                    key={premise.id} 
+                    className={`bg-white border rounded-lg shadow-sm transition-all overflow-hidden cursor-pointer ${expandedPremise === premise.id ? 'border-amber-500 ring-1 ring-amber-500' : 'border-slate-200 hover:border-amber-300'}`}
+                    onClick={() => togglePremise(premise.id)}
+                  >
+                    <div className="p-4 flex items-start">
+                      <div className={`text-white font-bold w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 mr-4 text-sm transition-colors ${expandedPremise === premise.id ? 'bg-amber-500' : 'bg-slate-900'}`}>
+                        {premise.id}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex justify-between items-center">
+                          <p className={`font-medium text-lg leading-snug pr-4 transition-colors ${expandedPremise === premise.id ? 'text-slate-900' : 'text-slate-700'}`}>
+                            {premise.text}
+                          </p>
+                          {expandedPremise === premise.id ? <ChevronDown className="text-amber-500 flex-shrink-0" /> : <ChevronRight className="text-slate-400 flex-shrink-0" />}
+                        </div>
+                        
+                        {/* Expanded Content */}
+                        {expandedPremise === premise.id && (
+                          <div className="mt-4 pt-4 border-t border-amber-100 animate-fade-in-down">
+                            <div className="flex items-start gap-3 bg-amber-50 p-3 rounded-md">
+                              <Lightbulb className="text-amber-600 w-5 h-5 mt-0.5 flex-shrink-0" />
+                              <p className="text-sm text-amber-900 italic">
+                                {premise.hint}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB: ESTRUCTURA (Punto 4) */}
+          {activeTab === 'estructura' && (
+            <div className="animate-fade-in">
+              <h2 className="text-xl font-bold text-slate-800 mb-2">{content.estructura.title}</h2>
+              <div className="bg-emerald-50 border border-emerald-100 p-4 rounded-lg mb-6">
+                 <p className="text-emerald-900 text-sm font-medium text-center">
+                   {content.estructura.subtitle}
+                 </p>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6 relative">
+                {/* Connector Line (Desktop) */}
+                <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0">
+                  <ChevronRight className="text-slate-200 w-12 h-12" />
+                </div>
+
+                {content.estructura.steps.map((step, idx) => (
+                  <div key={idx} className="relative z-10 bg-white border border-slate-200 rounded-xl p-6 shadow-sm h-full">
+                    <div className="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
+                      <h3 className="font-bold text-slate-800">{step.phase}</h3>
+                      <div className="flex items-center gap-1 text-xs font-mono text-slate-500 bg-slate-100 px-2 py-1 rounded">
+                        <Clock size={12} /> {step.time}
+                      </div>
+                    </div>
+                    <ul className="space-y-3">
+                      {step.points.map((point, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-slate-700 font-medium">
+                          <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1.5 flex-shrink-0"></div>
+                          {point}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+              
+               <div className="mt-6 text-center">
+                  <p className="text-sm text-slate-400 italic">"La justicia no es la mera aplicación de la ley, sino la comprensión del ser humano."</p>
+               </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer / Call to Action */}
+        <div className="bg-slate-50 p-6 border-t border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+             <div className="bg-white p-2 rounded border border-slate-200">
+               <FileText className="text-red-500 w-6 h-6" />
+             </div>
+             <div>
+               <p className="font-bold text-sm text-slate-800">Recurso de Lectura</p>
+               <p className="text-xs text-slate-500">Documento PDF Oficial</p>
+             </div>
+          </div>
+          <a 
+            href="https://www.pensamientopenal.com.ar/system/files/2014/12/doctrina27977.pdf" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="w-full md:w-auto bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl"
+          >
+            Descargar "Los Exploradores de la Caverna" <ChevronRight size={16} />
+          </a>
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
+export default ActivityBoard;
